@@ -57,8 +57,9 @@ func readCSV(filename string, figi string) []Candle {
 
 	// in real application this should be done once in init function.
 	userHeader, err := csvutil.Header(Candle{}, "csv")
+	//устал мучаться с флагами в Candle удалю поля руками в Header
 	userHeader = append(userHeader[:len(userHeader)-2], userHeader[len(userHeader):]...)
-	fmt.Println(userHeader)
+
 	if err != nil {
 		log.Fatal("error while csvutil.Header ", err)
 	}
