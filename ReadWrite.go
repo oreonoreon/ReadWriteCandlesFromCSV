@@ -19,12 +19,12 @@ type Candle struct {
 	LowPrice   float64
 	VolumeLot  int64
 
-	CandleEma
+	EMAS CandleEma `csv:",inline"`
 }
 type CandleEma struct {
 	Ema_10 float64 `csv:",omitempty"`
-	Ema_20 float64 `csv:"-"`
-	Ema_50 float64 `csv:"-"`
+	Ema_20 float64
+	Ema_50 float64
 	//Time   time.Time
 }
 
@@ -57,6 +57,8 @@ func readCSV(filename string, figi string) []Candle {
 
 	// in real application this should be done once in init function.
 	userHeader, err := csvutil.Header(Candle{}, "csv")
+	userHeader = append(userHeader[:len(userHeader)-2], userHeader[len(userHeader):]...)
+	fmt.Println(userHeader)
 	if err != nil {
 		log.Fatal("error while csvutil.Header ", err)
 	}
@@ -157,7 +159,7 @@ func NewTimeFrame(n int) {
 			//smax,smin,vol:=MAXLOWpriceANDVolume(Candles[k : k+n])
 			var eMas CandleEma
 			if len(Candles1) != 0 {
-				eMas = CountEma(Candles[k+n-1].ClosePrice, Candles1[len(Candles1)-1].CandleEma)
+				eMas = CountEma(Candles[k+n-1].ClosePrice, Candles1[len(Candles1)-1].EMAS)
 			} else {
 				eMas = CandleEma{
 					Ema_10: Candles[k+n-1].ClosePrice,
@@ -173,7 +175,7 @@ func NewTimeFrame(n int) {
 				MaxPrice:   MaxPriceCount(Candles[k : k+n]),
 				LowPrice:   LowPriceCount(Candles[k : k+n]),
 				VolumeLot:  VolumeLotCount(Candles[k : k+n]),
-				CandleEma:  eMas,
+				EMAS:       eMas,
 			}
 			Candles1 = append(Candles1, newCandle)
 			//enc := csvutil.NewEncoder(w)
